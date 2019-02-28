@@ -1,5 +1,6 @@
 #include <common.h>
 
+#include <bitset>
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
@@ -84,13 +85,25 @@ struct MySolver : public Context {
 
         int m = horisontals.size() + vertical_pairs.size();
 
-        auto get_tags = [&](int i) {
-            if (i < horisontals.size()) {
-                return horisontals[i].first;
-            } else {
-                return vertical_pairs[i - horisontals.size()].first;
+        vector<bitset<250>> bts;
+        vector<vector<int>> tts;
+        for (auto& p : horisontals) {
+            bitset<250> cur;
+            for (int i : p.first) {
+                cur[i] = 1;
             }
-        };
+            bts.push_back(cur);
+            tts.push_back(p.first);
+        }
+        for (auto& p : vertical_pairs) {
+            bitset<250> cur;
+            for (int i : p.first) {
+                cur[i] = 1;
+            }
+            bts.push_back(cur);
+            tts.push_back(p.first);
+        }
+
         auto get_id = [&](int i) {
             if (i < horisontals.size()) {
                 return make_pair(horisontals[i].second, -1);
@@ -100,7 +113,7 @@ struct MySolver : public Context {
         };
         vector<vector<int>> itag(ntags);
         for (int i = 0; i < m; i++) {
-            auto tt = get_tags(i);
+            auto& tt = tts[i];
             for (int v : tt) {
                 itag[v].push_back(i);
             }
@@ -123,22 +136,47 @@ struct MySolver : public Context {
                 // // }
             // }
         // }
+        // for (int i = 0; i < ntags; i++) {
+            // int sz = min<size_t>(itag[i].size(), 500);
+            // for (auto u : itag[i]) {
+                // auto tu = get_tags(u);
+                // for (auto v : itag[i]) {
+                // auto tv = get_tags(v);
+                // if (u == v) {
+                    // continue;
+                // }
+                // es.emplace_back(ScoreTags(tu, tv), u, v);
+                // }
+            // }
+        // }
+
+        auto score = [&](auto& a, auto &b) {
+            int inter = (a & b).count();
+            return min<int>(inter, min(a.count() - inter, b.count() - inter));
+        };
         for (int i = 0; i < ntags; i++) {
-            for (auto u : itag[i]) {
-                auto tu = get_tags(u);
-                for (auto v : itag[i]) {
-                auto tv = get_tags(v);
-                if (u == v) {
-                    continue;
-                }
-                es.emplace_back(ScoreTags(tu, tv), u, v);
+            if (i % 10 == 0) {
+                cerr << i << endl;
+            }
+            int sz = min<size_t>(itag[i].size(), 4000);
+            for (int x = 0; x < sz; x++) {
+                int u = itag[i][x];
+                auto& tu = bts[u];
+                for (int y = 0; y < sz; y++) {
+                    int v = itag[i][y];
+                    auto& tv = bts[v];
+                    if (u == v) {
+                        continue;
+                    }
+                    es.emplace_back(score(tu, tv), u, v);
                 }
             }
         }
-
+        cerr << "SORTING" << endl;
         sort(es.begin(), es.end());
         es.resize(unique(es.begin(), es.end()) - es.begin());
         reverse(es.begin(), es.end());
+        cerr << "SORTED" << endl;
 
         f.resize(m);
         for (int i = 0; i < m; i++) {
