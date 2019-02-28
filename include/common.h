@@ -29,7 +29,7 @@ struct Context {
     using TSolution = vector<pair<int, int>>;
 
     int n;
-    vector<Photo> slides;
+    vector<Photo> photos;
     TSolution solution;
 
     void Input() {
@@ -61,7 +61,7 @@ struct Context {
             }
 
             Photo s{(c == 'V')? Photo::VER : Photo::HOR, ntags, tags};
-            slides.emplace_back(std::move(s));
+            photos.emplace_back(std::move(s));
         }
     }
 
@@ -90,9 +90,17 @@ struct Context {
         }
     }
 
+    int ScorePhoto(const Photo& a, const Photo& b) {
+
+    }
 
     int GetScore() {
+        int ans = 0;
+        for (int i = 0; i + 1 < solution.size(); ++i) {
+            ans += ScorePhoto(solution[i], solution[i + 1]);
+        }
 
+        return ans;
     }
 
 };
