@@ -95,8 +95,9 @@ struct Context {
             assert(!used[p.first]);
             if (p.second >= 0) {
                 assert(!used[p.second]);
+                used[p.second] = 1;
             }
-            used[p.first] = used[p.second] = 1;
+            used[p.first] = 1;
         }
     }
 
