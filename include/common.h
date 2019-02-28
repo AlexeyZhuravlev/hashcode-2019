@@ -60,6 +60,9 @@ struct Context {
                 tags.push_back(id);
             }
 
+            sort(tags.begin(), tags.end());
+            tags.resize(unique(tags.begin(), tags.end()) - tags.begin());
+
             Photo s{(c == 'V')? Photo::VER : Photo::HOR, ntags, tags};
             photos.emplace_back(std::move(s));
         }
@@ -90,14 +93,49 @@ struct Context {
         }
     }
 
-    int ScorePhoto(const Photo& a, const Photo& b) {
+    int ScoreTags(const vector<int>& a, const vector<int>& b) {
+        auto is_in = [=](auto& v, auto x) {
+            return lower_bound(v.begin(), v.end(), x) != v.end();
+        };
+        int s1 = 0, s2 = 0, s3 = 0;
+        for (auto v : a) {
+            s1 += !is_in(b, v);
+            s2 += is_in(b, v);
+        }
+        for (auto v : b) {
+            s3 += !is_in(a, v);
+        }
 
+        return min(s1, min(s2, s3));
     }
 
     int GetScore() {
         int ans = 0;
-        for (int i = 0; i + 1 < solution.size(); ++i) {
-            ans += ScorePhoto(solution[i], solution[i + 1]);
+
+        auto unq = [=](auto& v) {
+            sort(v.begin(), v.end());
+            v.resize(unique(v.begin(), v.end()) - v.begin());
+        };
+
+        auto unn = [=](auto& a, auto& b) {
+            a.insert(a.end(), b.begin(), b.end());
+            unq(a);
+        };
+
+        auto get_tags = [=](auto p) {
+            int i = p.first;
+            int j = p.second;
+            auto a = photos[i].tags;
+            auto b = (j < 0)? vector<int>() : photos[j].tags;
+
+            unn(a, b);
+
+            return a;
+        };
+        for (size_t i = 0; i + 1 < solution.size(); ++i) {
+            auto t1 = get_tags(solution[i]);
+            auto t2 = get_tags(solution[i + 1]);
+            ans += ScoreTags(t1, t2);
         }
 
         return ans;
