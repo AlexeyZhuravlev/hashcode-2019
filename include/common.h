@@ -156,9 +156,28 @@ struct Context {
         return ans;
     }
 
-    void Better() {
-        const int iterations = 20;
-        const int generation = 10;
+    void Better(const int iterations = 1000, const int generation = 100) {
+        
+        auto unq = [=](auto& v) {
+            sort(v.begin(), v.end());
+            v.resize(unique(v.begin(), v.end()) - v.begin());
+        };
+
+        auto unn = [=](auto& a, auto& b) {
+            a.insert(a.end(), b.begin(), b.end());
+            unq(a);
+        };
+
+        auto get_tags = [=](auto p) {
+            int i = p.first;
+            int j = p.second;
+            auto a = photos[i].tags;
+            auto b = (j < 0)? vector<int>() : photos[j].tags;
+
+            unn(a, b);
+
+            return a;
+        };
 
         vector<pair<int, TSolution>> solutions;
         int score = GetScore();
@@ -167,16 +186,30 @@ struct Context {
             const int M = solutions.size();
             for (int j = 0; j < M; j++) {
                 TSolution mutated = solutions[j].second;
-                int i1 = std::rand() % solution.size();
-                int i2 = std::rand() % solution.size();
+                int score = solutions[j].first;
+
+                int i1 = std::rand() % (solution.size() - 2) + 1;
+                int i2 = std::rand() % (solution.size() - 2) + 1;
+
+                auto tagsi1l = get_tags(mutated[i1 -1]);
+                auto tagsi1 = get_tags(mutated[i1]);
+                auto tagsi1r = get_tags(mutated[i1 + 1]);
+
+                auto tagsi2l = get_tags(mutated[i2 - 1]);
+                auto tagsi2 = get_tags(mutated[i2]);
+                auto tagsi2r = get_tags(mutated[i2 + 1]);
+
+                score = score - ScoreTags(tagsi1l, tagsi1) - ScoreTags(tagsi1, tagsi1r) - ScoreTags(tagsi2l, tagsi2) - ScoreTags(tagsi2, tagsi2r) +
+                    ScoreTags(tagsi1l, tagsi2) + ScoreTags(tagsi2, tagsi1r) + ScoreTags(tagsi2l, tagsi1) + ScoreTags(tagsi1, tagsi2r);
+
                 swap(mutated[i1], mutated[i2]);
-                solution = mutated;
-                int score = GetScore();
+
                 solutions.emplace_back(score, mutated);
             }
 
+
             sort(solutions.rbegin(), solutions.rend());
-            if (solutions.size() > generation) {
+            if (int(solutions.size()) > generation) {
                 solutions.resize(generation);
             }
 
