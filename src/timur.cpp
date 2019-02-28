@@ -74,9 +74,6 @@ vector<pair<vector<int>, pair<int, int>>> GenerateVerticalPairsWithRepeating(con
             if (inter < mn) {
                 mn = inter;
                 mnjs = {j};
-                if (mn == 0) {
-                    break;
-                }
             } else if (inter == mn) {
                 mnjs.push_back(j);
             }
@@ -112,8 +109,6 @@ struct MySolver : public Context {
         shuffle(verticals.begin(), verticals.end(), rng);
         shuffle(horisontals.begin(), horisontals.end(), rng);
 
-//
-        auto vertical_pairs = GenerateVerticalPairsWithRepeating(verticals, n);
         SolveSquare(horisontals, verticals);
         cerr << "solution size " << solution.size() << endl;
     }
@@ -203,7 +198,7 @@ struct MySolver : public Context {
             for (auto& hor : horisontals) {
                 if (!used[hor.second]) {
                     int inter = Intersect(*cur, hor.first);
-                    int sc = min({inter, (int)(hor.first.size() - inter), (int)(cur->size() - inter)});
+                    int sc = min({inter, (int) (hor.first.size() - inter), (int) (cur->size() - inter)});
                     if (sc > mx) {
                         mxcur = &hor.first;
                         mx = sc;
@@ -212,8 +207,10 @@ struct MySolver : public Context {
                 }
             }
 
+            bool any_pair = 0;
             for (auto& vp : vertical_pairs) {
                 if (!used[vp.second.first] && !used[vp.second.second]) {
+                    any_pair = true;
                     int inter = Intersect(*cur, vp.first);
                     int sc = min({inter, (int)(vp.first.size() - inter), (int)(cur->size() - inter)});
                     if (sc > mx) {
@@ -221,6 +218,19 @@ struct MySolver : public Context {
                         mx = sc;
                         res = vp.second;
                     }
+                }
+            }
+
+            if (verticals.size() && (solution.size() % 1000 == 0 || !any_pair)) {
+                vector<pair<vector<int>, int>> new_verticals;
+                for (int i = 0; i < verticals.size(); ++i) {
+                    if (!used[verticals[i].second]) {
+                        new_verticals.push_back(verticals[i]);
+                    }
+                }
+                verticals = new_verticals;
+                if (!new_verticals.empty()) {
+                    vertical_pairs = GenerateVerticalPairsWithRepeating(new_verticals, n);
                 }
             }
 
