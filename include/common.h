@@ -31,6 +31,7 @@ struct Context {
     using TSolution = vector<pair<int, int>>;
 
     int n;
+    int ntags;
     vector<Photo> photos;
     TSolution solution;
 
@@ -68,6 +69,7 @@ struct Context {
             Photo s{(c == 'V')? Photo::VER : Photo::HOR, ntags, tags};
             photos.emplace_back(std::move(s));
         }
+        ntags = tag_to_id.size();
     }
 
     void Stats() {
