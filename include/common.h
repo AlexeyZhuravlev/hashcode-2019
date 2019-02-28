@@ -16,7 +16,7 @@
 
 using namespace std;
 
-struct Slide {
+struct Photo {
     enum Orient { VER, HOR };
 
     Orient orient;
@@ -29,7 +29,7 @@ struct Context {
     using TSolution = vector<pair<int, int>>;
 
     int n;
-    vector<Slide> slides;
+    vector<Photo> slides;
     TSolution solution;
 
     void Input() {
@@ -60,7 +60,7 @@ struct Context {
                 tags.push_back(id);
             }
 
-            Slide s{(c == 'V')? Slide::VER : Slide::HOR, ntags, tags};
+            Photo s{(c == 'V')? Photo::VER : Photo::HOR, ntags, tags};
             slides.emplace_back(std::move(s));
         }
     }
@@ -92,6 +92,7 @@ struct Context {
 
 
     int GetScore() {
+
     }
 
 };
