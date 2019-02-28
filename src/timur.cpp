@@ -149,6 +149,7 @@ struct MySolver : public Context {
                     }
                 }
             }
+            sort(edges.begin(), edges.end());
             vector<vector<MySlide*>> new_segments;
             used.assign(segments.size(), false);
             for (auto& e : edges) {
