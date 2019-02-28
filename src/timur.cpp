@@ -108,7 +108,7 @@ struct MySolver : public Context {
         shuffle(verticals.begin(), verticals.end(), rng);
         shuffle(horisontals.begin(), horisontals.end(), rng);
 
-        SolveSquare(horisontals, verticals);
+        SolveWithSegments(horisontals, verticals);
         cerr << "solution size " << solution.size() << endl;
     }
 
@@ -135,7 +135,7 @@ struct MySolver : public Context {
         std::set<pair<int, pair<int, int>>> edges;
         vector<bool> used;
         while (segments.size() > 1) {
-            int TOP = segments.size();
+            int TOP = 100000000;
             vector<pair<int, pair<int, int>>> edges;
             edges.reserve(TOP*10);
             for (int i = 0; i < segments.size(); ++i) {
@@ -219,7 +219,7 @@ struct MySolver : public Context {
                     }
                 }
             }
-
+            bool generated = 0;
             if (verticals.size() && (solution.size() % 1000 == 0 || !any_pair)) {
                 vector<pair<vector<int>, int>> new_verticals;
                 for (int i = 0; i < verticals.size(); ++i) {
@@ -231,6 +231,7 @@ struct MySolver : public Context {
                 if (!new_verticals.empty()) {
                     vertical_pairs = GenerateVerticalPairsWithRepeating(new_verticals, n);
                 }
+                generated = 1;
             }
 
             if (mx != -1) {
@@ -240,7 +241,7 @@ struct MySolver : public Context {
                 if (res.second != -1) {
                     used[res.second] = true;
                 }
-            } else {
+            } else if (!generated) {
                 break;
             }
             if (solution.size() % 10000 == 0) {
