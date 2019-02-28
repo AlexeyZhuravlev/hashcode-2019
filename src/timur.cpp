@@ -74,20 +74,19 @@ vector<pair<vector<int>, pair<int, int>>> GenerateVerticalPairsWithRepeating(con
             if (inter < mn) {
                 mn = inter;
                 mnjs = {j};
-            } else if (inter == mn) {
+            } else if (inter == mn && mnjs.size() < 10) {
                 mnjs.push_back(j);
             }
 
         }
-        if (mn != 99999) {
-            for (auto mnj : mnjs) {
-                vertical_pairs.emplace_back(Union(verticals[i].first, verticals[mnj].first),
-                                            make_pair(verticals[i].second, verticals[mnj].second));
-            }
+        for (auto mnj : mnjs) {
+            vertical_pairs.emplace_back(Union(verticals[i].first, verticals[mnj].first),
+                                        make_pair(verticals[i].second, verticals[mnj].second));
         }
     }
     mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
     shuffle(vertical_pairs.begin(), vertical_pairs.end(), rng);
+    cerr << "vertical_pairs size " <<vertical_pairs.size() << endl;
     return vertical_pairs;
 }
 
