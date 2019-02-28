@@ -92,8 +92,12 @@ struct Context {
         for (auto& p : solution) {
             assert(p.first >= 0 && p.second >= -1);
             assert(p.first < n && p.second < n);
-            assert(!used[p.first] && !used[p.second]);
-            used[p.first] = used[p.second] = 1;
+            assert(!used[p.first]);
+            if (p.second >= 0) {
+                assert(!used[p.second]);
+                used[p.second] = 1;
+            }
+            used[p.first] = 1;
         }
     }
 
