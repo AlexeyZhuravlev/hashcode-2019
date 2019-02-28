@@ -158,11 +158,11 @@ struct MySolver : public Context {
             if (i % 10 == 0) {
                 cerr << i << endl;
             }
-            int sz = min<size_t>(itag[i].size(), 4000);
+            int sz = min<size_t>(itag[i].size(), 3000);
             for (int x = 0; x < sz; x++) {
                 int u = itag[i][x];
                 auto& tu = bts[u];
-                for (int y = 0; y < sz; y++) {
+                for (int y = x + 1; y < sz; y++) {
                     int v = itag[i][y];
                     auto& tv = bts[v];
                     if (u == v) {
