@@ -7,7 +7,7 @@ if [ $# -ne 2 ]; then
 		./test/$1 < $filename > ./test/$(basename "$filename" .in).ans
 	done
 else
-	./test/$1 < ./test/$2.in > ./test/$2.out
+	./test/$1 < ./test/$2.in > ./test/$2.ans
 fi
 
 mkdir tmp

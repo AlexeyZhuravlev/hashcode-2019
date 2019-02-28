@@ -156,4 +156,34 @@ struct Context {
         return ans;
     }
 
+    void Better() {
+        const int iterations = 20;
+        const int generation = 10;
+
+        vector<pair<int, TSolution>> solutions;
+        int score = GetScore();
+        solutions.emplace_back(score, solution);
+        for (int i = 0; i < iterations; i++) {
+            const int M = solutions.size();
+            for (int j = 0; j < M; j++) {
+                TSolution mutated = solutions[j].second;
+                int i1 = std::rand() % solution.size();
+                int i2 = std::rand() % solution.size();
+                swap(mutated[i1], mutated[i2]);
+                solution = mutated;
+                int score = GetScore();
+                solutions.emplace_back(score, mutated);
+            }
+
+            sort(solutions.rbegin(), solutions.rend());
+            if (solutions.size() > generation) {
+                solutions.resize(generation);
+            }
+
+            cerr << i << " " << " best score " << solutions[0].first << endl;
+        }
+
+        solution = solutions[0].second;
+    }
+
 };
