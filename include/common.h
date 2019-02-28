@@ -16,6 +16,8 @@
 
 using namespace std;
 
+int __buffer[200];
+
 struct Photo {
     enum Orient { VER, HOR };
 
@@ -93,7 +95,12 @@ struct Context {
         }
     }
 
+    static int Intersect(const std::vector<int>& f, const std::vector<int>& s) {
+        return (set_intersection(f.begin(), f.end(), s.begin(), s.end(), __buffer) - __buffer);
+    }
+
     int ScoreTags(const vector<int>& a, const vector<int>& b) {
+        /*
         auto is_in = [=](auto& v, auto x) {
             return lower_bound(v.begin(), v.end(), x) != v.end();
         };
@@ -107,6 +114,11 @@ struct Context {
         }
 
         return min(s1, min(s2, s3));
+        */
+        int inter = Intersect(a, b);
+        int sc = min({inter, (int)(a.size() - inter), (int)(b.size() - inter)});
+
+        return sc;
     }
 
     int GetScore() {
@@ -135,6 +147,7 @@ struct Context {
         for (size_t i = 0; i + 1 < solution.size(); ++i) {
             auto t1 = get_tags(solution[i]);
             auto t2 = get_tags(solution[i + 1]);
+
             ans += ScoreTags(t1, t2);
         }
 
